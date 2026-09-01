@@ -7,15 +7,25 @@ To implement the **Q-Learning control algorithm** using the Gymnasium `FrozenLak
 ---
 
 ## Problem Statement
-
+To implement the Q-Learning control algorithm using the Gymnasium FrozenLake-v1 environment. The agent must learn the optimal action-value function through repeated interaction with the environment and determine a policy that allows it to reach the goal while avoiding holes.
 
 
 ## Software Requirements
-
+1. Python 3.x
+2. Gymnasium
+3. NumPy
+4. Matplotlib
+5. Jupyter Notebook / Google Colab / VS Code
 
 
 ## Environment Description
+FrozenLake-v1 is a grid-world reinforcement learning environment provided by Gymnasium. The environment consists of a 4 × 4 grid with 16 states and 4 possible actions:
 
+Action	Meaning
+0	      Left
+1	      Down
+2	      Right
+3	      Up
 
 
 ## Theory
@@ -67,7 +77,21 @@ $$
 ---
 
 ## Algorithm
-
+1.  Create the FrozenLake-v1 environment with is_slippery=False.
+2.  Obtain the number of states and actions from the environment.
+3.  Initialize the Q-table with zeros.
+4.  Set the learning rate, discount factor, epsilon, epsilon decay rate, and number of episodes.
+5.  Reset the environment at the beginning of every episode.
+6.  elect an action using the epsilon-greedy strategy.
+7.  Execute the selected action using env.step().
+8.  Update the Q-value using the Q-Learning update equation.
+9.  Continue until the episode terminates.
+10. Gradually decrease epsilon while maintaining a minimum value of 0.1.
+11. Repeat the training process for 20,000 episodes.
+12. Obtain the learned policy using argmax(Q, axis=1).
+13. Obtain the state-value function using the maximum Q-value for each state.
+14. Calculate the average reward over the last 1,000 episodes.
+15. Plot the moving-average learning curve.
 
 
 ## Python Program
@@ -77,60 +101,91 @@ $$
 # -------------------------------------------------
 # Q-Learning Training
 # -------------------------------------------------
-# Write your code here
+episode_rewards = []
 
+for episode in range(num_episodes):
+    state, info = env.reset()
+    done = False
+    truncated = False
+    total_episode_reward = 0
 
+    while not done and not truncated:
+        action = choose_action(state, epsilon, Q)
 
+        new_state, reward, done, truncated, info = env.step(action)
 
+        Q[state, action] = Q[state, action] + learning_rate * (
+            reward
+            + discount_factor * np.max(Q[new_state, :])
+            - Q[state, action]
+        )
 
+        state = new_state
+        total_episode_reward += reward
 
+    epsilon = max(
+        min_epsilon,
+        epsilon - epsilon_decay_rate
+    )
+
+    episode_rewards.append(total_episode_reward)
 
 ```
 ---
 
 ## Output
 
-```text
-Final Q-table:
+## Final Q-table:
+
+<img width="217" height="283" alt="image" src="https://github.com/user-attachments/assets/a88d500e-100a-41f2-a26f-00e9cf0b3011" />
+
+
+
+
+## Estimated State-Value Function:
+
+<img width="231" height="92" alt="image" src="https://github.com/user-attachments/assets/9869c050-721d-4b10-ae83-19789e2c0aca" />
 
 
 
 
 
-Estimated State-Value Function:
+## Learned Policy:
+<img width="147" height="92" alt="image" src="https://github.com/user-attachments/assets/660fef3e-e078-40e4-ab37-ef3ca96500b7" />
 
 
 
 
+## Average reward over last 1000 episodes: 
+<img width="332" height="25" alt="image" src="https://github.com/user-attachments/assets/93d6cdec-f32a-474e-9622-5bd2ddfa3529" />
 
-
-Learned Policy:
-
-
-
-
-Average reward over last 1000 episodes: 
-```
 
 ---
 
 ## Result
 
-```text
+The Q-Learning control algorithm was successfully implemented
+using the Gymnasium FrozenLake-v1 environment.
 
-
-
-```
+The agent learned an action-value function through repeated
+interaction with the environment and obtained a learned policy
+for selecting actions. The learned Q-table, state-value function,
+policy, and average reward were successfully obtained.
 
 ---
 
 ## Inference
+Q-Learning successfully learns an optimal policy by updating the
+Q-table based on the rewards obtained from the environment.
 
-```text
+The epsilon-greedy strategy allows the agent to explore different
+actions initially and gradually exploit the learned Q-values as
+epsilon decreases.
 
-
-
-```
+After sufficient training, the agent learns suitable actions for
+moving from the starting state toward the goal while avoiding
+holes. The learning curve indicates the improvement in the agent's
+performance during training.
 
 ---
 
